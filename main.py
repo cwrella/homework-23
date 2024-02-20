@@ -1,25 +1,18 @@
-import multiprocessing as mp
+import asyncio
 import time
-import random
+import requests
+async def load():
+    response = requests.get('https://jsonplaceholder.typicode.com/users')
+    s = response.status_code
+    print(s)
+    await asyncio.sleep(1)
 
-def number():
-    n = random.randint(1, 100)
-    file = open("number.txt", "w")
-    file.write(str(n))
-    file.close()
-    time.sleep(1)
-
-if __name__ == "__main__":
-    start = time.time()
-    processes = []
-    for i in range(1000):
-        process = mp.Process(target=number)
-        process.start()
-        processes.append(process)
-
-    for i in processes:
-        i.join()
-    print(time.time() - start)
+async def main():
+    tasks = [load() for i in range(100)]
+    await asyncio.gather(*tasks)
 
 
+start = time.time()
+asyncio.run(main())
+print(time.time() - start)
 
